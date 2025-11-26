@@ -1,9 +1,22 @@
-import { prefixPluginTranslations } from '@strapi/helper-plugin';
 import pluginId from './pluginId';
 import Initializer from './components/Initializer';
 import PluginIcon from './components/PluginIcon';
 
 const name = "Audit Trail";
+
+// @strapi/helper-plugin.prefixPluginTranslation has been removed, replacement:
+const prefixPluginTranslations = (
+  trad,
+  pluginId
+) => {
+  if (!pluginId) {
+    throw new TypeError("pluginId can't be empty");
+  }
+  return Object.keys(trad).reduce((acc, current) => {
+    acc[`${pluginId}.${current}`] = trad[current];
+    return acc;
+  }, {});
+};
 
 export default {
   register(app) {
