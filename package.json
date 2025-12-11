@@ -1,6 +1,6 @@
 {
   "name": "@10life/strapi-plugin-audit-trail",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "description": "Keep track to user activities.",
   "strapi": {
     "name": "audit-trail",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/10Life/strapi-plugin-audit-trail.git"
+    "url": "https://github.com/vrtxLeonie/strapi-plugin-audit-trail.git"
   },
   "keywords": [
     "strapi",
@@ -24,16 +24,11 @@
   ],
   "dependencies": {},
   "peerDependencies": {
-    "@strapi/strapi": "^4.4.0"
+    "@strapi/strapi": "^5.31.2"
   },
   "author": {
     "name": "Roy To"
   },
-  "maintainers": [
-    {
-      "name": "Roy To"
-    }
-  ],
   "engines": {
     "npm": ">=6.0.0"
   },
