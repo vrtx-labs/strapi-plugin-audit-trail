@@ -76,7 +76,7 @@ module.exports = (config, { strapi }) => {
         const url = ctx.request.url;
         const method = ctx.request.method.toUpperCase();
         const action_type = getActionType(method, url);
-        if (action_type !== "Other Activities") {
+            if (action_type !== "Other Activities" && !url.includes("api/")) {
             if (method !== undefined && ctx.params.model !== plugin_model && ctx.params.uid !== plugin_model) {
                 let author = {
                     id: 'not found',
