@@ -48,25 +48,27 @@ export default {
     });
   },
 
-  bootstrap(app) {},
+  bootstrap(app) { },
   async registerTrads({ locales }) {
     const importedTrads = await Promise.all(
       locales.map((locale) => {
-        return import(
+        try {
+          return import(
           /* webpackChunkName: "translation-[request]" */ `./translations/${locale}.json`
-        )
-          .then(({ default: data }) => {
-            return {
-              data: prefixPluginTranslations(data, pluginId),
-              locale,
-            };
-          })
-          .catch(() => {
-            return {
-              data: {},
-              locale,
-            };
-          });
+          )
+            .then(({ default: data }) => {
+              return {
+                data: prefixPluginTranslations(data, pluginId),
+                locale,
+              };
+            });
+        }
+        catch (error) {
+          return {
+            data: {},
+            locale,
+          };
+        }
       })
     );
 
