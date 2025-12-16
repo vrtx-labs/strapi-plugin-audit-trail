@@ -1,6 +1,6 @@
 {
   "name": "@vrtxlabs/strapi-plugin-audit-trail",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Keep track of admin user activities.",
   "strapi": {
     "name": "audit-trail",
