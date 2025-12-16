@@ -4,20 +4,6 @@ import PluginIcon from './components/PluginIcon';
 
 const name = "Audit Trail";
 
-// @strapi/helper-plugin.prefixPluginTranslation has been removed, replacement:
-const prefixPluginTranslations = (
-  trad,
-  pluginId
-) => {
-  if (!pluginId) {
-    throw new TypeError("pluginId can't be empty");
-  }
-  return Object.keys(trad).reduce((acc, current) => {
-    acc[`${pluginId}.${current}`] = trad[current];
-    return acc;
-  }, {});
-};
-
 export default {
   register(app) {
     app.addMenuLink({
@@ -52,26 +38,12 @@ export default {
   async registerTrads({ locales }) {
     const importedTrads = await Promise.all(
       locales.map((locale) => {
-        try {
-          return import(
-          /* webpackChunkName: "translation-[request]" */ `./translations/${locale}.json`
-          )
-            .then(({ default: data }) => {
-              return {
-                data: prefixPluginTranslations(data, pluginId),
-                locale,
-              };
-            });
-        }
-        catch (error) {
-          return {
-            data: {},
-            locale,
-          };
-        }
+        return {
+          data: {},
+          locale,
+        };
       })
     );
-
     return Promise.resolve(importedTrads);
   },
 };
