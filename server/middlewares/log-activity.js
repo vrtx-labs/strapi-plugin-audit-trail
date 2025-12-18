@@ -2,7 +2,7 @@
 const removePasswords = (key, value) => key === "password" ? undefined : value;
 
 const getContentType = (path) => {
-    if(path !== undefined){
+    if (path !== undefined) {
         if (path.includes("service-request")) {
             return "Service Request";
         }
@@ -17,13 +17,13 @@ const getContentType = (path) => {
         }
         if (path.includes("content-types") || path.includes("content-manager") || path.includes("users")) {
             return "Admin";
-        }    
+        }
     }
     return "Others";
 };
 
 const getActionType = (method, path) => {
-    if(path !== undefined){
+    if (path !== undefined) {
         if (method === "POST" && path.includes("service-request")) {
             return "Created Service Request";
         }
@@ -65,52 +65,54 @@ const audit_methods = [
     "POST",
     "PUT",
     "DELETE"
-  ];
+];
 
 const plugin_model = 'plugin::audit-trail.trail';
 
-module.exports = (config, {strapi}) => {
+module.exports = (config, { strapi }) => {
     return async (ctx, next) => {
-            await next();
-            try {
-                const url = ctx.request.url;
-                const method = ctx.request.method.toUpperCase();
-                const action_type = getActionType(method, url);
-                if(action_type !== "Other Activities"){
-                    if(method !== undefined && ctx.params.model !== plugin_model && ctx.params.uid !== plugin_model){
-                        let author = {
-                            id: 'not found',
-                            email: 'not found'
-                        };
-                        if (ctx.state && ctx.state.user) {
-                            author = {
-                                id: ctx.state.user.id,
-                                email: ctx.state.user.email
-                            };
-                        } 
-                        let payload = {
-                            contentType: getContentType(url),
-                            action: action_type,
-                            statusCode: ctx.response.status,
-                            author: author,
-                            method: method,
-                            url: url,
-                            params: ctx.params,
-                            request: ctx.request.body,
-                            content: ctx.response.body,
-                        };
-                        payload = JSON.parse(JSON.stringify(payload, removePasswords));
-                        if (audit_methods.includes(method) === true) {
-                            await strapi.query(plugin_model).create(
-                                { data: payload }
-                            );
-                        }
-                    }
+        await next();
+        try {
+        const url = ctx.request.url;
+        const method = ctx.request.method.toUpperCase();
+        const action_type = getActionType(method, url);
+            if (action_type !== "Other Activities" && !url.includes("api/")) {
+            if (method !== undefined && ctx.params.model !== plugin_model && ctx.params.uid !== plugin_model) {
+                let author = {
+                    id: 'not found',
+                    documentId: 'not found',
+                    email: 'not found'
+                };
+                if (ctx.state && ctx.state.user) {
+                    author = {
+                        id: ctx.state.user.id,
+                        documentId: ctx.state.user.documentId,
+                        email: ctx.state.user.email
+                    };
                 }
-            } catch (error) {
-                // ignore error
-                strapi.log.info("Unable to audit");
+                let payload = {
+                    contentType: getContentType(url),
+                    action: action_type,
+                    statusCode: ctx.response.status,
+                    author: author,
+                    method: method,
+                    url: url,
+                    params: ctx.params,
+                    request: ctx.request.body,
+                    content: ctx.response.body,
+                };
+                payload = JSON.parse(JSON.stringify(payload, removePasswords));
+                payload.statusCode = String(payload.statusCode);
+                if (audit_methods.includes(method) === true) {
+                            await strapi.query(plugin_model).create(
+                        { data: payload }
+                    );
+                }
             }
-        };
+        }
+        } catch (error) {
+            // ignore error
+            strapi.log.info("Unable to audit");
+        }
     };
-    
+};
